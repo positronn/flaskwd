@@ -3,6 +3,7 @@ from flask import Flask
 from flask import session
 from flask import render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import FlaskForm
@@ -18,8 +19,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'da
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+
+@app.shell_context_processor
+def make_shell_contest():
+    return dict(db = db, User = User, Role = Role)
 
 class NameForm(FlaskForm):
     name = StringField('What is your name?', validators = [DataRequired()])
