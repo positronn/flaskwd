@@ -11,6 +11,8 @@ from flask_mail import Mail, Message
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from datetime import datetime
+from threading import Thread
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -40,6 +42,11 @@ def make_shell_contest():
     return dict(db = db, User = User, Role = Role)
 
 
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+
 def send_email(to, subject, template, **kwargs):
     msg = Message(
         app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + subject,
@@ -48,7 +55,9 @@ def send_email(to, subject, template, **kwargs):
     )
     msg.body = render_template(template + '.txt', **kwargs)
     msg.html = render_template(template + '.html', **kwargs)
-    mail.send(msg)
+    thr = Thread(target = send_async_email, args = [app, msg])
+    thr.start()
+    return thr
 
 
 class NameForm(FlaskForm):
