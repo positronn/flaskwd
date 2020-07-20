@@ -49,7 +49,7 @@ class User(UserMixin, db.Model):
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            data = s.loads(token.ecnode('utf-8'))
+            data = s.loads(token.encode('utf-8'))
         except:
             return False
         if data.get('confirm') != self.id:
