@@ -10,7 +10,7 @@ __pycache__/
 data-dev.sqlite
 
 # my environment
-myenv.sh
+env.sh
 
 # vscode related
 .vscode
