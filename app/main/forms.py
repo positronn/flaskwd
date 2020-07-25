@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import ValidationError
 from wtforms import StringField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Length, Regexp, Email
+from ..models import Role, User
 
 
 class NameForm(FlaskForm):
@@ -37,7 +38,7 @@ class EditProfileAdminForm(FlaskForm):
     )
 
     confirmed = BooleanField('Confirmed')
-    role = StringField('Role', coerce = int)
+    role = StringField('Role')
     name = StringField('Real name', validators = [Length(0, 64)])
     location = StringField('Location', validators = [Length(0, 64)])
     about_me = TextAreaField('About me')
