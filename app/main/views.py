@@ -21,8 +21,6 @@ def index():
         page, per_page = current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out = False)
     posts = pagination.items
-    for post in posts:
-        print(post.author.username)
     return render_template('index.html', form = form, posts = posts, pagination = pagination, user = current_user)
 
 
