@@ -1,10 +1,12 @@
 # app/models.py
 import hashlib
+import bleach
 from . import db
 from . import login_manager
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
+from markdown import markdown
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request
 from flask_login import UserMixin, AnonymousUserMixin
@@ -91,6 +93,22 @@ class Post(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    body_html = db.Column(db.Text)
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = [
+            'a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+            'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2',
+            'h3', 'p'
+        ]
+        target_body_html = bleach.linkify(
+            bleach.clean(
+                markdown(value, output_format = 'html'),
+                tags = allowed_tags,
+                strip = True
+            )
+        )
 
 
 class User(UserMixin, db.Model):
@@ -222,3 +240,5 @@ login_manager.anonymous_user = AnonymousUser
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+db.event.listen(Post.body, 'set', Post.on_changed_body)
