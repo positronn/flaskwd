@@ -3,6 +3,7 @@ import os
 import click
 from app import create_app, db
 from app.models import User, Role, Follow, Permission, Post
+from app.models import Comment
 from flask_migrate import Migrate
 
 
@@ -18,7 +19,8 @@ def make_shell_context():
         Follow = Follow,
         Role = Role,
         Permission = Permission,
-        Post = Post
+        Post = Post,
+        Comment = Comment
     )
 
 
